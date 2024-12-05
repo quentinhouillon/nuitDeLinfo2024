@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./main.js" defer></script>
+    <title>CAPTCHA Snake</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 20px auto;
+        }
+        #resultat {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="captcha">
+        <h3>Pour entrer dans le monde de l'océan, veuillez manger 5 poissons :</h3>
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <p id="resultat"></p>
+    </div>
+</body>
+</html>
