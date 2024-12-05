@@ -3,6 +3,7 @@ function snakeCaptcha() {
     const ctx = canvas.getContext('2d');
     const box = 20;
     const main = document.getElementsByTagName("main")[0];
+    main.style.display = "none"
     document.getElementsByClassName("modal")[0].style.display = "block";
     
     const closeButton = document.getElementById("close");
@@ -41,6 +42,19 @@ function snakeCaptcha() {
             }
         }
         return false;
+    }
+
+    function showExplain() {
+        canvas.remove();
+        closeButton.style.display = "block";
+        const title = document.getElementsByClassName("modal-title")[0];
+        title.innerText = "Félicitation ! Vous avez remporter votre 1ère gemme !"
+        const explain = document.getElementById("resultat");
+        explain.style.color = "black"
+        explain.innerText = "Votre site web présente un corps humain avec quatre organes cliquables. " +
+                            "Pour chaque organe, les utilisateurs doivent répondre à un quiz qui met en " +
+                            "évidence les similitudes entre le corps humain et l'océan. Chaque bonne réponse " +
+                            "rapporte une gemme. Le jeu se termine lorsque l'utilisateur obtient cinq gemmes.";
     }
 
     function draw() {
@@ -94,12 +108,16 @@ function snakeCaptcha() {
 
         snake.unshift(newHead);
 
-        if (score >= 5) {
+        if (score >= 3) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             clearInterval(game);
             document.getElementById('resultat').innerText = 'CAPTCHA correct';
             document.getElementById('resultat').style.color = 'green';
-            closeButton.style.display = "block";
+
+            setTimeout(() => {
+                showExplain();
+            }, 2000);
+            
         }
     }
 
@@ -107,8 +125,8 @@ function snakeCaptcha() {
 }
 
 snakeCaptcha()
-
-let gemCount = 0;
+let gemCount = 1;
+document.getElementById('gem-counter').innerText = `Gemmes: ${gemCount}`;
 function handleClick(imageElement) {
     // Cacher tout l'affichage précédent
     document.querySelector('main').style.display = 'none';
@@ -148,6 +166,7 @@ function submitAnswer(correctOption) {
                 document.getElementById('gem-counter').innerText = `Gemmes: ${gemCount}`;
             }
             alert('Bonne réponse! Vous avez gagné une gemme.');
+            restoreInitialView()
         } else {
             alert('Mauvaise réponse. Essayez encore.');
         }
