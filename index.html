@@ -3,32 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuit de l'Info 2024</title>
+    <title>Corps Humain et Océan</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="./main.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="main.js" defer></script>
+    <link rel="icon" href="assets/favicon.png" type="image/x-icon">
 </head>
 <body>
+    <header>
+        <h1>Ressemblance entre le Corps Humain et l'Océan</h1>
+    </header>
     <main>
-        <div id="gem-counter">Gemmes: 1</div>
-        <div id="image-container"></div>
+        <section id="coeur">
+            <h2>Le Cœur</h2>
+            <img id="img-coeur" src="assets/Designer.png" alt="Cœur en pixel art">
+            <p>Le cœur humain est comme une pompe, tout comme les courants océaniques qui circulent l'eau.</p>
+        </section>
+        <section id="poumons">
+            <h2>Les Poumons</h2>
+            <img id="img-poumons" src="assets/Designer (1).png" alt="Poumons en pixel art">
+            <p>Les poumons échangent des gaz, tout comme les océans échangent des gaz avec l'atmosphère.</p>
+        </section>
+        <section id="sang">
+            <h2>Le Sang</h2>
+            <img id="img-sang" src="assets/goutte.png" alt="Sang en pixel art">
+            <p>Le sang transporte des nutriments, tout comme les courants océaniques transportent des nutriments.</p>
+        </section>
+        <section id="cerveau">
+            <h2>Le Cerveau</h2>
+            <img id="img-cerveau" src="assets/Designer (2).png" alt="Cerveau en pixel art">
+            <p>Le cerveau contrôle le corps, tout comme les océans contrôlent le climat.</p>
+        </section>
     </main>
+    <footer>
+        <p>&copy; <span id="year"></span> leclick</p>
+    </footer>
+
+    <!-- Pop-up structure -->
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close">&times;</span>
+            <p id="popup-question"></p>
+            <div id="popup-choices"></div>
+        </div>
+    </div>
 
     <div id="myModal" class="modal">
         <div class="modal-content">
             <span id="close">&times;</span>
-            <h2 class="modal-title">Pour entrer dans le monde de l'océan, veuillez manger 3 poissons :</h2>
+            <h2 class="modal-title">Pour entrer dans le monde de l'océan, veuillez percer 5 bulles :</h2>
+            <p id="bubble-counter">0/5</p>
             <canvas id="gameCanvas" width="400" height="400"></canvas>
             <p id="resultat"></p>
         </div>
     </div>
-
-    <div id="custom-alert" class="custom-alert hidden">
-        <p id="custom-alert-message"></p>
-        <button id="custom-alert-ok" onclick="closeCustomAlert()">OK</button>
-    </div>
-
-    <footer>
-        <p>&copy; 2024 Houillon Quentin, Pluvinet--Viaene Armand, Beilborn Combe Elouann. All rights reserved.</p>
-    </footer>
 </body>
 </html>

@@ -1,18 +1,116 @@
+/* styles.css */
 body {
-    font-family: 'VT323', monospace;
+    font-family: 'Press Start 2P', cursive; /* Utiliser une police pixel art */
+    background-color: #e0f7fa;
+    background-image: url('assets/sea.png'); /* Chemin vers votre image de fond */
+    background-size: cover; /* Couvre toute la page */
+    background-position: center; /* Centre l'image */
+    background-repeat: no-repeat; /* Évite la répétition de l'image */
+    color: #006064;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: rgba(0, 131, 143, 0.8); /* Utiliser une couleur de fond semi-transparente */
+    color: #ffffff; /* Changer la couleur du texte à blanc pour plus de vivacité */
+    padding: 20px;
+    text-align: center;
+}
+
+main {
+    padding: 20px;
+}
+
+section {
+    margin: 20px auto; /* Ajoute une marge automatique à gauche et à droite */
+    padding: 20px;
+    background-color: rgba(178, 235, 242, 0.8); /* Utiliser une couleur de fond semi-transparente */
+    border-radius: 8px;
+    border: 1px solid #006064; /* Ajoute une bordure de 1px */
+    transition: transform 0.3s, background-color 0.3s;
+    text-align: center;
+    max-width: 800px; /* Limite la largeur maximale des sections */
+}
+
+h2 {
+    color: #004d40;
+}
+
+section img {
+    width: 100px; /* Ajustez la taille selon vos besoins */
+    image-rendering: pixelated; /* Donne un effet pixelisé */
+}
+
+section.active {
+    background-color: rgba(77, 208, 225, 0.8); /* Utiliser une couleur de fond semi-transparente */
+    transform: scale(1.05);
 }
 
 footer {
+    background-color: rgba(178, 235, 242, 0.8); /* Utiliser la même couleur que les sections */
     text-align: center;
     padding: 10px;
-    background-color: #f1f1f1;
-    border-top: 1px solid #ccc;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
+    border-top: 1px solid #006064; /* Ajoute une bordure en haut */
 }
 
+/* Styles pour le pop-up */
+.popup {
+    display: none; /* Masquer le pop-up par défaut */
+    position: fixed; /* Positionner le pop-up de manière fixe */
+    z-index: 1; /* Assurer que le pop-up soit au-dessus des autres éléments */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Activer le défilement si nécessaire */
+    background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+}
+
+.popup-content {
+    background-color: rgba(178, 235, 242, 0.9); /* Utiliser la même couleur que les sections */
+    margin: 15% auto; /* Centrer le pop-up */
+    padding: 20px;
+    border: 1px solid #006064; /* Bordure de 1px */
+    width: 80%; /* Largeur du pop-up */
+    max-width: 600px; /* Largeur maximale du pop-up */
+    border-radius: 8px;
+    text-align: center;
+}
+
+.close {
+    color: #006064;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #004d40;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#popup-choices {
+    margin-top: 20px;
+}
+
+#popup-choices button {
+    background-color: #006064;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive;
+    transition: background-color 0.3s;
+}
+
+#popup-choices button:hover {
+    background-color: #004d40;
+}
 
 canvas {
     background-image: url('assets/sea.png');
@@ -55,72 +153,5 @@ canvas {
 #close:focus {
     color: black;
     text-decoration: none;
-    cursor: pointer;
-}
-
-.clickable-image {
-    width: 20vh;
-}
-
-.enlarged-image {
-    width: 30vh;
-    margin-top: -4em;
-}
-
-.enlarged-image-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    text-align: center;
-}
-
-.questionnaire {
-    font-size: 1.5em;
-}
-
-.questionnaire p {
-    margin-bottom: 1em;
-}
-
-.questionnaire label {
-    display: block;
-    margin-bottom: -0.5em;
-}
-
-.questionnaire button {
-    margin-top: 0em;
-    font-size: 1em; 
-}
-
-.enlarged-image + .questionnaire {
-    margin-top: -1.5em;
-}
-
-.custom-alert {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    border: 2px solid black;
-    padding: 20px;
-    z-index: 1000;
-    font-family: 'VT323', monospace;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.custom-alert.hidden {
-    display: none;
-}
-
-.custom-alert button {
-    margin-top: 10px;
-    padding: 5px 10px;
-    font-family: 'VT323', monospace;
     cursor: pointer;
 }

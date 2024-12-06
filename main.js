@@ -1,259 +1,191 @@
-const questions = [
-    {
-        title: "coeur",
-        question: "question coeur",
-        reponse: ["option 1", "option 2", "option 3"],
-        bonneReponse: 2,
-        image: "assets/Designer.png",
-        complete: false
-    },
-    {
-        title: "poumon",
-        question: "Question poumon",
-        reponse: ["option 1", "option 2", "option 3"],
-        bonneReponse: 0,
-        image: "assets/Designer (1).png",
-        complete: false
-    },
-    {
-        title: "cerveau",
-        question: "Question cerveau",
-        reponse: ["option 1", "option 2", "option 3"],
-        bonneReponse: 1,
-        image: "assets/Designer (2).png",
-        complete: false
-    },
-    {
-        title: "estomac",
-        question: "Question estomac",
-        reponse: ["option 2", "option 2", "option 3"],
-        bonneReponse: 2,
-        image: "assets/Designer (3).png",
-        complete: false
-    },
-];
+// main.js
+document.addEventListener('DOMContentLoaded', () => {
+    const sections = document.querySelectorAll('section');
+    sections.forEach(section => {
+        section.addEventListener('click', () => {
+            section.classList.toggle('active');
+        });
+    });
 
-function snakeCaptcha() {
+    const modal = document.getElementById('myModal');
+    const closeModal = document.getElementById('close');
+
+    // Open the modal
+    modal.style.display = 'block';
+
+    // Close the modal when the user clicks on <span> (x)
+    closeModal.onclick = function() {
+        modal.style.display = 'none';
+    };
+
+    bubbleCaptcha();
+});
+
+// Mettre à jour l'année actuelle dans le footer
+const yearSpan = document.getElementById('year');
+const currentYear = new Date().getFullYear();
+yearSpan.textContent = currentYear;
+
+// Ajouter des événements de clic aux images
+const questions = {
+    'img-coeur': {
+        question: 'Quelle est la fonction principale du cœur ?',
+        choices: ['Pomper le sang', 'Filtrer le sang', 'Produire des hormones'],
+        correct: 'Pomper le sang'
+    },
+    'img-poumons': {
+        question: 'Quelle est la fonction principale des poumons ?',
+        choices: ['Échanger des gaz', 'Pomper le sang', 'Produire des hormones'],
+        correct: 'Échanger des gaz'
+    },
+    'img-sang': {
+        question: 'Que transporte le sang dans le corps humain ?',
+        choices: ['Nutriments', 'Gaz', 'Hormones'],
+        correct: 'Nutriments'
+    },
+    'img-cerveau': {
+        question: 'Quelle est la fonction principale du cerveau ?',
+        choices: ['Contrôler le corps', 'Pomper le sang', 'Filtrer le sang'],
+        correct: 'Contrôler le corps'
+    }
+};
+
+function bubbleCaptcha() {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-    const box = 20;
-    const main = document.getElementsByTagName("main")[0];
-    main.style.display = "none"
-    document.getElementsByClassName("modal")[0].style.display = "block";
-    
-    const closeButton = document.getElementById("close");
-    closeButton.addEventListener('click', () => {
-        document.getElementById("myModal").style.display = "none";
-        main.style.display = "block"
-    });
 
-    let snake = [];
-    snake[0] = { x: 9 * box, y: 10 * box };
-    let food = {
-        x: Math.floor(Math.random() * 19) * box,
-        y: Math.floor(Math.random() * 19) * box
-    };
+    let bubbles = [];
     let score = 0;
-    let direction;
+    let gameInterval;
 
-    document.addEventListener('keydown', get_direction);
-
-    function get_direction(event) {
-        if (event.keyCode == 37 && direction != 'RIGHT') {
-            direction = 'LEFT';
-        } else if (event.keyCode == 38 && direction != 'DOWN') {
-            direction = 'UP';
-        } else if (event.keyCode == 39 && direction != 'LEFT') {
-            direction = 'RIGHT';
-        } else if (event.keyCode == 40 && direction != 'UP') {
-            direction = 'DOWN';
-        }
+    function createBubble() {
+        return {
+            x: Math.random() * canvas.width,
+            y: canvas.height + 20,
+            radius: Math.random() * 15 + 15,
+            speed: Math.random() * 3 + 2.5
+        };
     }
 
-    function collision(newHead, snake) {
-        for (let i = 0; i < snake.length; i++) {
-            if (newHead.x == snake[i].x && newHead.y == snake[i].y) {
-                return true;
-            }
-        }
-        return false;
+    function drawBubble(bubble) {
+        ctx.beginPath();
+        ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(173, 216, 230, 0.8)'; // Couleur des bulles
+        ctx.fill();
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+        ctx.closePath();
     }
 
-    function showExplain() {
-        canvas.remove();
-        closeButton.style.display = "block";
-        const title = document.getElementsByClassName("modal-title")[0];
-        title.innerText = "Félicitation ! Vous avez remporter votre 1ère gemme !"
-        const explain = document.getElementById("resultat");
-        explain.style.color = "black"
-        explain.innerText = "Votre site web présente un corps humain avec quatre organes cliquables. " +
-                            "Pour chaque organe, les utilisateurs doivent répondre à un quiz qui met en " +
-                            "évidence les similitudes entre le corps humain et l'océan. Chaque bonne réponse " +
-                            "rapporte une gemme. Le jeu se termine lorsque l'utilisateur obtient cinq gemmes.";
-    }
-
-    function draw() {
+    function drawBubbles() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        for (let i = 0; i < snake.length; i++) {
-            ctx.fillStyle = (i == 0) ? 'green' : 'white';
-            ctx.fillRect(snake[i].x, snake[i].y, box, box);
-            ctx.strokeStyle = 'red';
-            ctx.strokeRect(snake[i].x, snake[i].y, box, box);
-        }
+        for (let i = 0; i < bubbles.length; i++) {
+            let bubble = bubbles[i];
+            bubble.y -= bubble.speed; // Les bulles montent
+            drawBubble(bubble);
 
+            if (bubble.y + bubble.radius < 0) {
+                gameOver();
+                return;
+            }
+        }
+    }
+
+    function checkClick(event) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+    
+        for (let i = 0; i < bubbles.length; i++) {
+            let bubble = bubbles[i];
+            const distance = Math.sqrt((mouseX - bubble.x) ** 2 + (mouseY - bubble.y) ** 2);
+    
+            // Si l'utilisateur clique sur une bulle
+            if (distance < bubble.radius) {
+                bubbles.splice(i, 1);
+                score++;
+                document.getElementById('bubble-counter').textContent = score + '/5';
+    
+                if (score >= 5) {
+                    clearInterval(gameInterval);
+                    ctx.fillStyle = 'rgba(144, 238, 144, 0.8)'; // Light green color
+                    ctx.font = '40px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Félicitation', canvas.width / 2, canvas.height / 2);
+                    document.getElementById('close').style.display = 'block';
+                    return;
+                }
+            }
+        }
+    }
+
+    function gameOver() {
+        clearInterval(gameInterval); // Arrête le jeu
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'red';
-        let img = new Image();
-        img.src = 'assets/poisson.png';
-        ctx.drawImage(img, food.x, food.y, box * 1.5, box * 1.5);
+        ctx.font = '40px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
 
-        let snakeX = snake[0].x;
-        let snakeY = snake[0].y;
+        // Redémarre le jeu après 2 secondes
+        setTimeout(() => {
+            bubbleCaptcha();
+        }, 1500);
+    }
 
-        if (direction == 'LEFT') snakeX -= box;
-        if (direction == 'UP') snakeY -= box;
-        if (direction == 'RIGHT') snakeX += box;
-        if (direction == 'DOWN') snakeY += box;
 
-        if (snakeX == food.x && snakeY == food.y) {
-            score++;
-            food = {
-                x: Math.floor(Math.random() * 19 + 1) * box,
-                y: Math.floor(Math.random() * 19 + 1) * box
-            };
-        } else {
-            snake.pop();
+    function gameLoop() {
+        if (Math.random() < 0.03) { // Ajoute une bulle aléatoirement
+            bubbles.push(createBubble());
         }
+        drawBubbles();
+    }
 
-        let newHead = {
-            x: snakeX,
-            y: snakeY
+    canvas.addEventListener('click', checkClick);
+    gameInterval = setInterval(gameLoop, 30);
+}
+
+
+Object.keys(questions).forEach(id => {
+    document.getElementById(id).addEventListener('click', () => {
+        showPopup(questions[id]);
+    });
+});
+
+// Fonction pour afficher le pop-up
+function showPopup(questionData) {
+    const popup = document.getElementById('popup');
+    const popupQuestion = document.getElementById('popup-question');
+    const popupChoices = document.getElementById('popup-choices');
+    const closeBtn = document.getElementsByClassName('close')[0];
+
+    popupQuestion.textContent = questionData.question;
+    popupChoices.innerHTML = '';
+
+    questionData.choices.forEach(choice => {
+        const button = document.createElement('button');
+        button.textContent = choice;
+        button.onclick = () => {
+            if (choice === questionData.correct) {
+                alert('Bonne réponse !');
+            } else {
+                alert('Mauvaise réponse. Réessayez.');
+            }
+            popup.style.display = 'none';
         };
-
-        if (snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height || collision(newHead, snake)) {
-            clearInterval(game);
-            document.getElementById('resultat').innerText = 'CAPTCHA incorrect, recommence';
-            document.getElementById('resultat').style.color = 'red';
-            setTimeout(() => {
-                document.getElementById('resultat').innerText = "";
-                snakeCaptcha();
-            }, 2000);
-            return;
-        }
-
-        snake.unshift(newHead);
-
-        if (score >= 3) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            clearInterval(game);
-            document.getElementById('resultat').innerText = 'CAPTCHA correct';
-            document.getElementById('resultat').style.color = 'green';
-
-            setTimeout(() => {
-                showExplain();
-            }, 2000);
-            
-        }
-    }
-
-    let game = setInterval(draw, 150);
-}
-
-// snakeCaptcha()
-let gemCount = 1;
-
-// Show images
-function showImage() {
-    const imageContainer = document.getElementById('image-container');
-    while (imageContainer.firstChild) {
-        imageContainer.removeChild(imageContainer.firstChild);
-    }
-    questions.forEach(question => {
-        const imgElement = document.createElement('img');
-        imgElement.src = question.image;
-        imgElement.className = 'clickable-image';
-        if (!question.complete) {
-            imgElement.addEventListener('click', () => handleClick(question));
-        }
-        imageContainer.appendChild(imgElement);
+        popupChoices.appendChild(button);
     });
-}
 
-showImage();
-document.getElementById('gem-counter').innerText = `Gemmes: ${gemCount}`;
+    popup.style.display = 'block';
 
-function handleClick(question) {
-    // Cacher tout l'affichage précédent
-    document.querySelector('main').style.display = 'none';
-    document.querySelector('footer').style.display = 'none';
-    document.body.style.overflow = 'hidden'; 
+    closeBtn.onclick = function() {
+        popup.style.display = 'none';
+    };
 
-    // Afficher l'image agrandie et le questionnaire
-    const enlargedImageContainer = document.createElement('div');
-    enlargedImageContainer.className = 'enlarged-image-container';
-
-    const enlargedImage = document.createElement('img');
-    enlargedImage.src = question.image;
-    enlargedImage.className = 'enlarged-image';
-
-    const questionnaire = document.createElement('div');
-    questionnaire.className = 'questionnaire';
-    questionnaire.innerHTML = `
-        <h2>Questionnaire</h2>
-        <p>${question.question}</p>
-        ${question.reponse.map((option, index) => `
-            <label><input type="radio" name="question1" value="${index}">${option}</label><br>
-        `).join('')}
-        <button onclick="submitAnswer(${questions.indexOf(question)})">Valider</button>
-    `;
-    enlargedImageContainer.appendChild(enlargedImage);
-    enlargedImageContainer.appendChild(questionnaire);
-    document.body.appendChild(enlargedImageContainer);
-}
-
-function showCustomAlert(message) {
-    const alertBox = document.getElementById('custom-alert');
-    const alertMessage = document.getElementById('custom-alert-message');
-    alertMessage.innerText = message;
-    alertBox.classList.remove('hidden');
-}
-
-function closeCustomAlert() {
-    const alertBox = document.getElementById('custom-alert');
-    alertBox.classList.add('hidden');
-}
-
-function submitAnswer(questionIndex) {
-    document.getElementById('custom-alert-ok').removeEventListener('click', () => {
-        restoreInitialView();
-    });
-    const question = questions[questionIndex];
-    const selectedOption = document.querySelector('input[name="question1"]:checked');
-    if (selectedOption) {
-        const answerIndex = parseInt(selectedOption.value);
-        if (answerIndex === question.bonneReponse) {
-            gemCount++;
-            document.getElementById('gem-counter').innerText = `Gemmes: ${gemCount}`;
-            question.complete = true;
-            showImage();
-            alert('Bonne réponse ! Vous avez gagné une gemme.');
-            restoreInitialView();
-
-
-        } else {
-            alert('Mauvaise réponse. Réessayez.');
+    window.onclick = function(event) {
+        if (event.target == popup) {
+            popup.style.display = 'none';
         }
-    } else {
-        alert('Veuillez sélectionner une réponse.');
-    }
-}
-
-function restoreInitialView() {
-    document.querySelector('main').style.display = 'block';
-    document.querySelector('footer').style.display = 'block';
-    document.body.style.overflow = 'auto'; // Réactiver le défilement
-    const enlargedImageContainer = document.querySelector('.enlarged-image-container');
-    if (enlargedImageContainer) {
-        document.body.removeChild(enlargedImageContainer);
-    }
-}
+    };
+};
