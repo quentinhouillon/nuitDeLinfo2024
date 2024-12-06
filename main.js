@@ -1,3 +1,38 @@
+const questions = [
+    {
+        title: "coeur",
+        question: "question coeur",
+        reponse: ["option 1", "option 2", "option 3"],
+        bonneReponse: 2,
+        image: "assets/Designer.png",
+        complete: false
+    },
+    {
+        title: "poumon",
+        question: "Question poumon",
+        reponse: ["option 1", "option 2", "option 3"],
+        bonneReponse: 0,
+        image: "assets/Designer (1).png",
+        complete: false
+    },
+    {
+        title: "cerveau",
+        question: "Question cerveau",
+        reponse: ["option 1", "option 2", "option 3"],
+        bonneReponse: 1,
+        image: "assets/Designer (2).png",
+        complete: false
+    },
+    {
+        title: "estomac",
+        question: "Question estomac",
+        reponse: ["option 2", "option 2", "option 3"],
+        bonneReponse: 2,
+        image: "assets/Designer (3).png",
+        complete: false
+    },
+];
+
 function snakeCaptcha() {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -124,10 +159,30 @@ function snakeCaptcha() {
     let game = setInterval(draw, 150);
 }
 
-snakeCaptcha()
+// snakeCaptcha()
 let gemCount = 1;
+
+// Show images
+function showImage() {
+    const imageContainer = document.getElementById('image-container');
+    while (imageContainer.firstChild) {
+        imageContainer.removeChild(imageContainer.firstChild);
+    }
+    questions.forEach(question => {
+        const imgElement = document.createElement('img');
+        imgElement.src = question.image;
+        imgElement.className = 'clickable-image';
+        if (!question.complete) {
+            imgElement.addEventListener('click', () => handleClick(question));
+        }
+        imageContainer.appendChild(imgElement);
+    });
+}
+
+showImage();
 document.getElementById('gem-counter').innerText = `Gemmes: ${gemCount}`;
-function handleClick(imageElement) {
+
+function handleClick(question) {
     // Cacher tout l'affichage précédent
     document.querySelector('main').style.display = 'none';
     document.querySelector('footer').style.display = 'none';
@@ -135,43 +190,61 @@ function handleClick(imageElement) {
 
     // Afficher l'image agrandie et le questionnaire
     const enlargedImageContainer = document.createElement('div');
-    enlargedImageContainer.className = 'enlarged-image-container vt323-regular';
+    enlargedImageContainer.className = 'enlarged-image-container';
 
     const enlargedImage = document.createElement('img');
-    enlargedImage.src = imageElement.src;
+    enlargedImage.src = question.image;
     enlargedImage.className = 'enlarged-image';
 
     const questionnaire = document.createElement('div');
-    questionnaire.className = 'questionnaire vt323-regular';
+    questionnaire.className = 'questionnaire';
     questionnaire.innerHTML = `
         <h2>Questionnaire</h2>
-        <p>${imageElement.getAttribute('data-question')}</p>
-        <label><input type="radio" name="question1" value="option1">${imageElement.getAttribute('data-option1')}</label><br>
-        <label><input type="radio" name="question1" value="option2">${imageElement.getAttribute('data-option2')}</label><br>
-        <label><input type="radio" name="question1" value="option3">${imageElement.getAttribute('data-option3')}</label><br>
-        <label><input type="radio" name="question1" value="option4">${imageElement.getAttribute('data-option4')}</label><br>
-        <button onclick="submitAnswer('${imageElement.getAttribute('data-correct')}')">Valider</button>
+        <p>${question.question}</p>
+        ${question.reponse.map((option, index) => `
+            <label><input type="radio" name="question1" value="${index}">${option}</label><br>
+        `).join('')}
+        <button onclick="submitAnswer(${questions.indexOf(question)})">Valider</button>
     `;
     enlargedImageContainer.appendChild(enlargedImage);
     enlargedImageContainer.appendChild(questionnaire);
     document.body.appendChild(enlargedImageContainer);
 }
 
-function submitAnswer(correctOption) {
+function showCustomAlert(message) {
+    const alertBox = document.getElementById('custom-alert');
+    const alertMessage = document.getElementById('custom-alert-message');
+    alertMessage.innerText = message;
+    alertBox.classList.remove('hidden');
+}
+
+function closeCustomAlert() {
+    const alertBox = document.getElementById('custom-alert');
+    alertBox.classList.add('hidden');
+}
+
+function submitAnswer(questionIndex) {
+    document.getElementById('custom-alert-ok').removeEventListener('click', () => {
+        restoreInitialView();
+    });
+    const question = questions[questionIndex];
     const selectedOption = document.querySelector('input[name="question1"]:checked');
     if (selectedOption) {
-        if (selectedOption.value === correctOption) {
-            if (gemCount < 5) {
-                gemCount++;
-                document.getElementById('gem-counter').innerText = `Gemmes: ${gemCount}`;
-            }
-            alert('Bonne réponse! Vous avez gagné une gemme.');
-            restoreInitialView()
+        const answerIndex = parseInt(selectedOption.value);
+        if (answerIndex === question.bonneReponse) {
+            gemCount++;
+            document.getElementById('gem-counter').innerText = `Gemmes: ${gemCount}`;
+            question.complete = true;
+            showImage();
+            alert('Bonne réponse ! Vous avez gagné une gemme.');
+            restoreInitialView();
+
+
         } else {
-            alert('Mauvaise réponse. Essayez encore.');
+            alert('Mauvaise réponse. Réessayez.');
         }
     } else {
-        alert('Veuillez sélectionner une option.');
+        alert('Veuillez sélectionner une réponse.');
     }
 }
 
